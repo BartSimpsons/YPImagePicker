@@ -91,6 +91,10 @@ final class YPAssetViewContainer: UIView {
         sv(multipleSelectionButton)
         multipleSelectionButton.size(42).trailing(15)
         multipleSelectionButton.Bottom == self.Bottom - 15
+        
+        /* for note */
+        multipleSelectionButton.alpha = 0
+        /* for note */
     }
 
     required init?(coder: NSCoder) {

@@ -107,7 +107,11 @@ extension YPLibraryVC {
 
 extension YPLibraryVC: UICollectionViewDataSource {
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return mediaManager.fetchResult?.count ?? 0
+//        return mediaManager.fetchResult?.count ?? 0
+        
+        /* for note */
+        return mediaManager.fetchAssetArray.count
+        /* for note */
     }
 }
 

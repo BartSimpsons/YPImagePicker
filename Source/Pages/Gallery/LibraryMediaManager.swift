@@ -13,19 +13,37 @@ class LibraryMediaManager {
     
     weak var v: YPLibraryView?
     var collection: PHAssetCollection?
-    internal var fetchResult: PHFetchResult<PHAsset>?
+
+//    internal var fetchResult: PHFetchResult<PHAsset>?
+    
+    /* for note */
+    internal var fetchResult: PHFetchResult<PHAsset>? {
+        didSet {
+            var arr: [PHAsset] = []
+            fetchResult?.enumerateObjects(options: .reverse) { theAsset, index, _ in
+                arr.append(theAsset)
+            }
+            fetchAssetArray = arr
+        }
+    }
+    /* for note */
+    
     internal var previousPreheatRect: CGRect = .zero
     internal var imageManager: PHCachingImageManager?
     internal var exportTimer: Timer?
     internal var currentExportSessions: [AVAssetExportSession] = []
 
+    /// 项目新增属性 图片数组
+    internal var fetchAssetArray: [PHAsset] = []
+    
     /// If true then library has items to show. If false the user didn't allow any item to show in picker library.
     internal var hasResultItems: Bool {
-        if let fetchResult = self.fetchResult {
-            return fetchResult.count > 0
-        } else {
-            return false
-        }
+//        if let fetchResult = self.fetchResult {
+//            return fetchResult.count > 0
+//        } else {
+//            return false
+//        }
+        return fetchAssetArray.count > 0
     }
     
     func initialize() {
@@ -60,11 +78,29 @@ class LibraryMediaManager {
                 addedIndexPaths += indexPaths
             })
             
-            guard let assetsToStartCaching = fetchResult?.assetsAtIndexPaths(addedIndexPaths),
-                  let assetsToStopCaching = fetchResult?.assetsAtIndexPaths(removedIndexPaths) else {
-                print("Some problems in fetching and caching assets.")
-                return
+//            guard let assetsToStartCaching = fetchResult?.assetsAtIndexPaths(addedIndexPaths),
+//                  let assetsToStopCaching = fetchResult?.assetsAtIndexPaths(removedIndexPaths) else {
+//                print("Some problems in fetching and caching assets.")
+//                return
+//            }
+            
+            /* for note */
+            func assetsAtIndexPaths(_ result:[PHAsset], _ indexPaths: [IndexPath]) -> [PHAsset] {
+                if indexPaths.count == 0 { return [] }
+                var assets: [PHAsset] = []
+                assets.reserveCapacity(indexPaths.count)
+                for indexPath in indexPaths {
+                    if indexPath.item >= 0 && indexPath.item < result.count {
+                        let asset = result[indexPath.item]
+                        assets.append(asset)
+                    }
+                }
+                return assets
             }
+            
+            let assetsToStartCaching = assetsAtIndexPaths(fetchAssetArray, addedIndexPaths)
+            let assetsToStopCaching = assetsAtIndexPaths(fetchAssetArray, removedIndexPaths)
+            /* for note */
             
             imageManager?.startCachingImages(for: assetsToStartCaching,
                                              targetSize: cellSize,
@@ -219,15 +255,25 @@ class LibraryMediaManager {
         }
     }
 
+//    func getAsset(at index: Int) -> PHAsset? {
+//        guard let fetchResult = fetchResult else {
+//            print("FetchResult not contain this index: \(index)")
+//            return nil
+//        }
+//        guard fetchResult.count > index else {
+//            print("FetchResult not contain this index: \(index)")
+//            return nil
+//        }
+//        return fetchResult.object(at: index)
+//    }
+    
+    /* for note */
     func getAsset(at index: Int) -> PHAsset? {
-        guard let fetchResult = fetchResult else {
+        guard fetchAssetArray.count > index else {
             print("FetchResult not contain this index: \(index)")
             return nil
         }
-        guard fetchResult.count > index else {
-            print("FetchResult not contain this index: \(index)")
-            return nil
-        }
-        return fetchResult.object(at: index)
+        return fetchAssetArray[index]
     }
+    /* for note */
 }

@@ -69,7 +69,14 @@ open class YPBottomPager: UIViewController, UIScrollViewDelegate {
         // Build headers
         for (index, c) in controllers.enumerated() {
             let menuItem = YPMenuItem()
-            menuItem.textLabel.text = c.title?.capitalized
+//            menuItem.textLabel.text = c.title?.capitalized
+            /* for note */
+            if c.isKind(of: YPLibraryVC.self) {
+                menuItem.textLabel.text = "相册"
+            } else {
+                menuItem.textLabel.text = c.title?.capitalized
+            }
+            /* for note */
             menuItem.button.tag = index
             menuItem.button.addTarget(self,
                                       action: #selector(tabTapped(_:)),

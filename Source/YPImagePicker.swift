@@ -76,6 +76,14 @@ open class YPImagePicker: UINavigationController {
         navigationBar.tintColor = .ypLabel
         view.backgroundColor = .ypSystemBackground
 
+        /* for note */
+        if #available(iOS 15.0, *) {
+            let navBarAppearance = UINavigationBarAppearance()
+            navBarAppearance.configureWithOpaqueBackground()
+            self.navigationBar.scrollEdgeAppearance = navBarAppearance
+        }
+        /* for note */
+        
         picker.didSelectItems = { [weak self] items in
             // Use Fade transition instead of default push animation
             let transition = CATransition()
@@ -108,10 +116,51 @@ open class YPImagePicker: UINavigationController {
                     if YPConfig.shouldSaveNewPicturesToAlbum {
                         let isModified = photo.modifiedImage != nil
                         if photo.fromCamera || (!photo.fromCamera && isModified) {
-                            YPPhotoSaver.trySaveImage(photo.image, inAlbumNamed: YPConfig.albumName)
+//                            YPPhotoSaver.trySaveImage(photo.image, inAlbumNamed: YPConfig.albumName)
+
+                            /* for note */
+                            /// 因业务上 头像需剪切 且不需要相册多选 所以暂时这样判断 来区分相册多选
+                            if case let YPCropType.rectangle(ratio) = YPConfig.showsCrop {
+                                YPPhotoSaver.trySaveImage(photo.image, inAlbumNamed: YPConfig.albumName)
+                                self?.didSelect(items: [mediaItem])
+                            } else {
+                                /// 相册多选
+                                YPPhotoSaver.trySaveImageAndWait(photo.image, inAlbumNamed: YPConfig.albumName) { (assetChangeRequest) in
+                                    /**
+                                     在多图选择时选择相册和拍照操作同时进行  拍照的照片会和相册的选择混排，所以采取了拍照后保存在系统相册的图片会在相册选择时直接选择中
+                                     以下代码是为了获取拍照图片的PHAsset
+                                     */
+                                    var identifier = assetChangeRequest?.placeholderForCreatedAsset?.localIdentifier ?? ""
+                                    
+                                    let fetchOptions = PHFetchOptions()
+                                    fetchOptions.predicate = NSPredicate(format: "title = %@", YPConfig.albumName)
+                                    let collection = PHAssetCollection.fetchAssetCollections(with: .album,
+                                                                                             subtype: .any,
+                                                                                             options: fetchOptions)
+                                    
+                                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.15) {
+                                        if let result = collection.firstObject {
+                                            let options = PHFetchOptions()
+                                            options.predicate = NSPredicate.init(format: "self.localIdentifier CONTAINS %@", identifier)
+                                            let asset = PHAsset.fetchAssets(in: result, options: options)
+                                            photo.asset = asset.firstObject
+                                        }
+                                        
+                                        DispatchQueue.main.async {
+                                            self?.didSelect(items: [YPMediaItem.photo(p: photo)])
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            self?.didSelect(items: [mediaItem])
                         }
+                    } else {
+                        self?.didSelect(items: [mediaItem])
                     }
-                    self?.didSelect(items: [mediaItem])
+                    /* for note */
+                    
+//                    self?.didSelect(items: [mediaItem])
                 }
                 
                 func showCropVC(photo: YPMediaPhoto, completion: @escaping (_ aphoto: YPMediaPhoto) -> Void) {

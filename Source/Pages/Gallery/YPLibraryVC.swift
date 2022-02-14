@@ -135,7 +135,7 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
         }
         
         // Activate multiple selection when using `minNumberOfItems`
-        if YPConfig.library.minNumberOfItems > 1 {
+        if YPConfig.library.minNumberOfItems > 1, mediaManager.hasResultItems {
             multipleSelectionButtonTapped()
         }
     }
@@ -261,7 +261,7 @@ internal final class YPLibraryVC: UIViewController, YPPermissionCheckable {
         }
 
         let options = PHFetchOptions()
-        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+//        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
         options.predicate = YPConfig.library.mediaType.predicate()
         return options
     }
