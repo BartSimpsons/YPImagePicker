@@ -267,25 +267,49 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
     
     func updateUI() {
         if !YPConfig.hidesCancelButton {
-            // Update Nav Bar state.
-            navigationItem.leftBarButtonItem = UIBarButtonItem(title: YPConfig.wordings.cancel,
-                                                               style: .plain,
-                                                               target: self,
-                                                               action: #selector(close))
+            /** for note —— iOS 16的bug*/
+            if #available(iOS 16.0, *) {
+                let btn = UIButton(frame: CGRect(x: 10, y: 44, width: 44, height: 44))
+                btn.setTitleColor(UIColor.black, for: .normal)
+                btn.titleLabel?.font = UIFont.systemFont(ofSize: 18)
+                btn.setTitle("取消", for: .normal)
+                btn.addTarget(self, action: #selector(Self.close), for: .touchUpInside)
+                navigationItem.leftBarButtonItem =  UIBarButtonItem.init(customView: btn)
+            } else {
+                navigationItem.leftBarButtonItem = UIBarButtonItem(title: YPConfig.wordings.cancel,
+                                                                   style: .plain,
+                                                                   target: self,
+                                                                   action: #selector(close))
+            }
         }
+        
         switch mode {
         case .library:
             setTitleViewWithTitle(aTitle: libraryVC?.title ?? "")
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: YPConfig.wordings.next,
-                                                                style: .done,
-                                                                target: self,
-                                                                action: #selector(done))
-            navigationItem.rightBarButtonItem?.tintColor = YPConfig.colors.tintColor
+            /** for note —— iOS 16的bug*/
+            if #available(iOS 16.0, *) {
+                let btn = UIButton(frame: CGRect(x: UIScreen.main.bounds.size.width - 66 - 10, y: 44, width: 66, height: 44))
+                btn.setTitleColor(UIColor.black, for: .normal)
+                btn.setTitleColor(UIColor.black.withAlphaComponent(0.4), for: .disabled)
+                btn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .medium)
+                btn.setTitle("下一步", for: .normal)
+                btn.addTarget(self, action: #selector(Self.done), for: .touchUpInside)
+                btn.tintColor = YPConfig.colors.tintColor
+                btn.isEnabled = libraryVC!.selectedItems.count >= YPConfig.library.minNumberOfItems
+                navigationItem.rightBarButtonItem =  UIBarButtonItem.init(customView: btn)
+                navigationItem.rightBarButtonItem?.isEnabled =
+                    libraryVC!.selectedItems.count >= YPConfig.library.minNumberOfItems
+            } else {
+                navigationItem.rightBarButtonItem = UIBarButtonItem(title: YPConfig.wordings.next,
+                                                                    style: .done,
+                                                                    target: self,
+                                                                    action: #selector(done))
+                navigationItem.rightBarButtonItem?.tintColor = YPConfig.colors.tintColor
 
-            // Disable Next Button until minNumberOfItems is reached.
-            navigationItem.rightBarButtonItem?.isEnabled =
-                libraryVC!.selectedItems.count >= YPConfig.library.minNumberOfItems
-
+                // Disable Next Button until minNumberOfItems is reached.
+                navigationItem.rightBarButtonItem?.isEnabled =
+                    libraryVC!.selectedItems.count >= YPConfig.library.minNumberOfItems
+            }
         case .camera:
             navigationItem.titleView = nil
             title = cameraVC?.title
