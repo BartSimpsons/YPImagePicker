@@ -1241,7 +1241,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.2.1;
+				MARKETING_VERSION = 5.2.2;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yummypets.YPImagePicker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1278,7 +1278,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.2.1;
+				MARKETING_VERSION = 5.2.2;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yummypets.YPImagePicker;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1387,7 +1387,7 @@
 			repositoryURL = "https://github.com/freshOS/Stevia";
 			requirement = {
 				kind = exactVersion;
-				version = 4.8.0;
+				version = 5.1.2;
 			};
 		};
 		EBA37BCE26F75C67005DAAD4 /* XCRemoteSwiftPackageReference "PryntTrimmerView" */ = {
