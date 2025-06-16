@@ -276,7 +276,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
                 let btn = UIButton(frame: CGRect(x: 10, y: 44, width: 44, height: 44))
                 btn.setTitleColor(UIColor.black, for: .normal)
                 btn.titleLabel?.font = UIFont.systemFont(ofSize: 18)
-                btn.setTitle("取消", for: .normal)
+                btn.setTitle(YPConfig.wordings.cancel, for: .normal)
                 btn.addTarget(self, action: #selector(Self.close), for: .touchUpInside)
                 navigationItem.leftBarButtonItem =  UIBarButtonItem.init(customView: btn)
             } else {
@@ -296,7 +296,7 @@ open class YPPickerVC: YPBottomPager, YPBottomPagerDelegate {
                 btn.setTitleColor(UIColor.black, for: .normal)
                 btn.setTitleColor(UIColor.black.withAlphaComponent(0.4), for: .disabled)
                 btn.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .medium)
-                btn.setTitle("下一步", for: .normal)
+                btn.setTitle(YPConfig.wordings.next, for: .normal)
                 btn.addTarget(self, action: #selector(Self.done), for: .touchUpInside)
                 btn.tintColor = YPConfig.colors.tintColor
                 btn.isEnabled = libraryVC!.selectedItems.count >= YPConfig.library.minNumberOfItems
